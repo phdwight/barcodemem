@@ -27,6 +27,22 @@ class QRCodeGenerator:
 
     def open_logo(self):
         self.logo = Image.open(self.logo_path)
+        # Create a mask to make the logo circular
+        mask = Image.new("L", self.logo.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((0, 0) + self.logo.size, fill=255)
+        self.logo = ImageOps.fit(self.logo, mask.size, centering=(0.5, 0.5))
+        self.logo.putalpha(mask)
+
+    def paste_logo(self):
+        img_w, img_h = self.img.size
+        logo_w, logo_h = self.logo.size
+        pos_w = (img_w - logo_w) // 2
+        pos_h = (img_h - logo_h) // 2
+        # Use the mask when pasting the logo
+        self.img.paste(
+            self.logo, (pos_w, pos_h, pos_w + logo_w, pos_h + logo_h), self.logo
+        )
 
     def scale_logo(self):
         img_w, img_h = self.img.size
@@ -35,13 +51,6 @@ class QRCodeGenerator:
         new_w = int(logo_w * scale)
         new_h = int(logo_h * scale)
         self.logo = self.logo.resize((new_w, new_h))
-
-    def paste_logo(self):
-        img_w, img_h = self.img.size
-        logo_w, logo_h = self.logo.size
-        pos_w = (img_w - logo_w) // 2
-        pos_h = (img_h - logo_h) // 2
-        self.img.paste(self.logo, (pos_w, pos_h, pos_w + logo_w, pos_h + logo_h))
 
     def save_image(self):
         self.img.save(self.output_path)
@@ -56,6 +65,10 @@ class QRCodeGenerator:
 
 # Usage
 generator = QRCodeGenerator(
-    "https://1drv.ms/i/s!Aj9-arS-mTLuietv3UnWjsCXSx1rxQ?e=mewhWP", "src/parent.jpg", "qrcode.png", "teal", "white"
+    "https://1drv.ms/i/s!Aj9-arS-mTLuietv3UnWjsCXSx1rxQ?e=mewhWP",
+    "src/parent.jpg",
+    "qrcode.png",
+    "teal",
+    "white",
 )
 generator.generate()
