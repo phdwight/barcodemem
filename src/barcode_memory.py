@@ -56,6 +56,6 @@ class QRCodeGenerator:
 
 # Usage
 generator = QRCodeGenerator(
-    "https://youtube.com", "src/church.png", "qrcode.png", "teal", "white"
+    "https://1drv.ms/i/s!Aj9-arS-mTLuietv3UnWjsCXSx1rxQ?e=mewhWP", "src/parent.jpg", "qrcode.png", "teal", "white"
 )
 generator.generate()
