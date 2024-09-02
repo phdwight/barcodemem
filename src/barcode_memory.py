@@ -65,8 +65,8 @@ class QRCodeGenerator:
 
 # Usage
 generator = QRCodeGenerator(
-    "https://1drv.ms/i/s!Aj9-arS-mTLuietv3UnWjsCXSx1rxQ?e=mewhWP",
-    "src/parent.jpg",
+    "https://www.youtube.com/embed/5uX2YXvF1to?autoplay=1&fs=1",
+    "src/teenyang.jpg",
     "qrcode.png",
     "teal",
     "white",
