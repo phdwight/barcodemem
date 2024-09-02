@@ -26,7 +26,7 @@ class QRCodeGenerator:
         self.img = self.qr.make_image(fill=self.qr_color, back_color=self.bg_color)
         self.img = self.img.convert("RGBA")
 
-        # Create a new image to draw circles
+        # Create a new image to draw circles and hearts
         new_img = Image.new("RGBA", self.img.size, self.bg_color)
         draw = ImageDraw.Draw(new_img)
 
@@ -39,19 +39,38 @@ class QRCodeGenerator:
         # Calculate the offset to center the dots
         offset = (module_size - dot_size) / 2
 
+        # Define the corner square positions
+        corner_positions = [
+            (0, 0),
+            (0, self.qr.modules_count - 7),
+            (self.qr.modules_count - 7, 0),
+        ]
+
         # Draw a circle for each QR code module
         for r in range(self.qr.modules_count):
             for c in range(self.qr.modules_count):
                 if self.qr.modules[r][c]:
-                    upper_left = (
-                        c * module_size + offset,
-                        r * module_size + offset,
+                    # Check if the current module is part of the corner squares
+                    is_corner = any(
+                        r in range(corner[0], corner[0] + 7) and c in range(corner[1], corner[1] + 7)
+                        for corner in corner_positions
                     )
-                    lower_right = (
-                        (c + 1) * module_size - offset,
-                        (r + 1) * module_size - offset,
-                    )
-                    draw.ellipse([upper_left, lower_right], fill=self.qr_color)
+                    if is_corner:
+                        upper_left = (c * module_size, r * module_size)
+                        lower_right = ((c + 1) * module_size, (r + 1) * module_size)
+                        draw.rectangle([upper_left, lower_right], fill=self.qr_color)
+                    else:
+                        # Draw a heart shape
+                        center_x = c * module_size + module_size / 2
+                        center_y = r * module_size + module_size / 2
+                        heart_size = dot_size / 2
+                        points = [
+                            (center_x, center_y - heart_size),
+                            (center_x - heart_size, center_y),
+                            (center_x, center_y + heart_size),
+                            (center_x + heart_size, center_y),
+                        ]
+                        draw.polygon(points, fill=self.qr_color)
 
         self.img = new_img
 
@@ -140,7 +159,7 @@ class QRCodeBuilder:
 # Usage
 generator = QRCodeGenerator(
     "https://www.youtube.com/embed/5uX2YXvF1to?autoplay=1&fs=1",
-    "src/teenyang.jpg",
+    "src/church.png",
     "qrcode.png",
     "teal",
     "white",
