@@ -3,13 +3,15 @@ from PIL import Image, ImageOps, ImageDraw
 
 
 class QRCodeGenerator:
-    def __init__(self, url, logo_path, output_path, qr_color="black", bg_color="white", dot_scale=0.5):
+    def __init__(self, url, logo_path, output_path, qr_color="black", bg_color="white", dot_scale=0.5, corner_shape="circle", module_shape="heart"):
         self.url = url
         self.logo_path = logo_path
         self.output_path = output_path
         self.qr_color = qr_color
         self.bg_color = bg_color
         self.dot_scale = dot_scale
+        self.corner_shape = corner_shape
+        self.module_shape = module_shape
         self.qr = None
         self.img = None
         self.logo = None
@@ -26,7 +28,7 @@ class QRCodeGenerator:
         self.img = self.qr.make_image(fill=self.qr_color, back_color=self.bg_color)
         self.img = self.img.convert("RGBA")
 
-        # Create a new image to draw circles and hearts
+        # Create a new image to draw shapes
         new_img = Image.new("RGBA", self.img.size, self.bg_color)
         draw = ImageDraw.Draw(new_img)
 
@@ -46,7 +48,7 @@ class QRCodeGenerator:
             (self.qr.modules_count - 7, 0),
         ]
 
-        # Draw a circle for each QR code module
+        # Draw shapes for each QR code module
         for r in range(self.qr.modules_count):
             for c in range(self.qr.modules_count):
                 if self.qr.modules[r][c]:
@@ -56,21 +58,43 @@ class QRCodeGenerator:
                         for corner in corner_positions
                     )
                     if is_corner:
-                        upper_left = (c * module_size, r * module_size)
-                        lower_right = ((c + 1) * module_size, (r + 1) * module_size)
-                        draw.rectangle([upper_left, lower_right], fill=self.qr_color)
+                        if self.corner_shape == "circle":
+                            upper_left = (
+                                c * module_size + offset,
+                                r * module_size + offset,
+                            )
+                            lower_right = (
+                                (c + 1) * module_size - offset,
+                                (r + 1) * module_size - offset,
+                            )
+                            draw.ellipse([upper_left, lower_right], fill=self.qr_color)
+                        elif self.corner_shape == "square":
+                            upper_left = (c * module_size, r * module_size)
+                            lower_right = ((c + 1) * module_size, (r + 1) * module_size)
+                            draw.rectangle([upper_left, lower_right], fill=self.qr_color)
                     else:
-                        # Draw a heart shape
-                        center_x = c * module_size + module_size / 2
-                        center_y = r * module_size + module_size / 2
-                        heart_size = dot_size / 2
-                        points = [
-                            (center_x, center_y - heart_size),
-                            (center_x - heart_size, center_y),
-                            (center_x, center_y + heart_size),
-                            (center_x + heart_size, center_y),
-                        ]
-                        draw.polygon(points, fill=self.qr_color)
+                        if self.module_shape == "heart":
+                            # Draw a heart shape
+                            center_x = c * module_size + module_size / 2
+                            center_y = r * module_size + module_size / 2
+                            heart_size = dot_size / 2
+                            points = [
+                                (center_x, center_y - heart_size),
+                                (center_x - heart_size, center_y),
+                                (center_x, center_y + heart_size),
+                                (center_x + heart_size, center_y),
+                            ]
+                            draw.polygon(points, fill=self.qr_color)
+                        elif self.module_shape == "circle":
+                            upper_left = (
+                                c * module_size + offset,
+                                r * module_size + offset,
+                            )
+                            lower_right = (
+                                (c + 1) * module_size - offset,
+                                (r + 1) * module_size - offset,
+                            )
+                            draw.ellipse([upper_left, lower_right], fill=self.qr_color)
 
         self.img = new_img
 
@@ -158,11 +182,13 @@ class QRCodeBuilder:
 
 # Usage
 generator = QRCodeGenerator(
-    "https://www.youtube.com/embed/5uX2YXvF1to?autoplay=1&fs=1",
-    "src/church.png",
-    "qrcode.png",
-    "teal",
-    "white",
-    0.5,
+    url="https://www.youtube.com/embed/5uX2YXvF1to?autoplay=1&fs=1",
+    logo_path="src/church.png",
+    output_path="qrcode.png",
+    qr_color="teal",
+    bg_color="white",
+    dot_scale=0.5,
+    corner_shape="circle",
+    module_shape="heart"
 )
 generator.generate()
