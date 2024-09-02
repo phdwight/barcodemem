@@ -58,20 +58,15 @@ class QRCodeGenerator:
                         for corner in corner_positions
                     )
                     if is_corner:
-                        if self.corner_shape == "circle":
-                            upper_left = (
-                                c * module_size + offset,
-                                r * module_size + offset,
-                            )
-                            lower_right = (
-                                (c + 1) * module_size - offset,
-                                (r + 1) * module_size - offset,
-                            )
-                            draw.ellipse([upper_left, lower_right], fill=self.qr_color)
-                        elif self.corner_shape == "square":
-                            upper_left = (c * module_size, r * module_size)
-                            lower_right = ((c + 1) * module_size, (r + 1) * module_size)
-                            draw.rectangle([upper_left, lower_right], fill=self.qr_color)
+                        upper_left = (
+                            c * module_size,
+                            r * module_size,
+                        )
+                        lower_right = (
+                            (c + 1) * module_size,
+                            (r + 1) * module_size,
+                        )
+                        draw.ellipse([upper_left, lower_right], fill=self.qr_color)
                     else:
                         if self.module_shape == "heart":
                             # Draw a heart shape
