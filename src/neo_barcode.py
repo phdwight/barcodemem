@@ -45,10 +45,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Generate a QR code with a logo in the center."
     )
-    parser.add_argument("url", help="The URL to encode in the QR code.")
-    parser.add_argument("logo_path", help="The path to the logo image.")
     parser.add_argument(
-        "output_path", help="The path to save the generated QR code image."
+        "--url", required=True, help="The URL to encode in the QR code."
+    )
+    parser.add_argument(
+        "--logo_path", required=True, help="The path to the logo image."
+    )
+    parser.add_argument(
+        "--output_path",
+        required=True,
+        help="The path to save the generated QR code image.",
     )
     parser.add_argument(
         "--module_drawer",
