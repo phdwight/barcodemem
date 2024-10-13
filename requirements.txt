@@ -1,0 +1,10 @@
+pyyaml
+prettytable
+pylint
+jmespath
+jc
+pytest-xdist
+pytest-cov
+pytest
+qrcode
+Pillow
