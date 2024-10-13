@@ -3,15 +3,21 @@ from PIL import Image, ImageOps, ImageDraw
 
 
 class QRCodeGenerator:
-    def __init__(self, url, logo_path, output_path, qr_color="black", bg_color="white", dot_scale=0.5, corner_shape="circle", module_shape="heart"):
+    def __init__(
+        self,
+        url,
+        logo_path,
+        output_path,
+        qr_color="black",
+        bg_color="white",
+        dot_scale=0.5,
+    ):
         self.url = url
         self.logo_path = logo_path
         self.output_path = output_path
         self.qr_color = qr_color
         self.bg_color = bg_color
         self.dot_scale = dot_scale
-        self.corner_shape = corner_shape
-        self.module_shape = module_shape
         self.qr = None
         self.img = None
         self.logo = None
@@ -21,11 +27,13 @@ class QRCodeGenerator:
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
             box_size=10,
-            border=2,
+            border=4,
         )
         self.qr.add_data(self.url)
         self.qr.make(fit=True)
-        self.img = self.qr.make_image(fill=self.qr_color, back_color=self.bg_color)
+        self.img = self.qr.make_image(
+            fill_color=self.qr_color, back_color=self.bg_color
+        )
         self.img = self.img.convert("RGBA")
 
         # Create a new image to draw shapes
@@ -54,10 +62,12 @@ class QRCodeGenerator:
                 if self.qr.modules[r][c]:
                     # Check if the current module is part of the corner squares
                     is_corner = any(
-                        r in range(corner[0], corner[0] + 7) and c in range(corner[1], corner[1] + 7)
+                        r in range(corner[0], corner[0] + 7)
+                        and c in range(corner[1], corner[1] + 7)
                         for corner in corner_positions
                     )
                     if is_corner:
+                        # Draw solid circles for corners
                         upper_left = (
                             c * module_size,
                             r * module_size,
@@ -68,28 +78,16 @@ class QRCodeGenerator:
                         )
                         draw.ellipse([upper_left, lower_right], fill=self.qr_color)
                     else:
-                        if self.module_shape == "heart":
-                            # Draw a heart shape
-                            center_x = c * module_size + module_size / 2
-                            center_y = r * module_size + module_size / 2
-                            heart_size = dot_size / 2
-                            points = [
-                                (center_x, center_y - heart_size),
-                                (center_x - heart_size, center_y),
-                                (center_x, center_y + heart_size),
-                                (center_x + heart_size, center_y),
-                            ]
-                            draw.polygon(points, fill=self.qr_color)
-                        elif self.module_shape == "circle":
-                            upper_left = (
-                                c * module_size + offset,
-                                r * module_size + offset,
-                            )
-                            lower_right = (
-                                (c + 1) * module_size - offset,
-                                (r + 1) * module_size - offset,
-                            )
-                            draw.ellipse([upper_left, lower_right], fill=self.qr_color)
+                        # Draw a small dot
+                        upper_left = (
+                            c * module_size + offset,
+                            r * module_size + offset,
+                        )
+                        lower_right = (
+                            (c + 1) * module_size - offset,
+                            (r + 1) * module_size - offset,
+                        )
+                        draw.ellipse([upper_left, lower_right], fill=self.qr_color)
 
         self.img = new_img
 
@@ -180,10 +178,8 @@ generator = QRCodeGenerator(
     url="https://www.youtube.com/embed/5uX2YXvF1to?autoplay=1&fs=1",
     logo_path="src/church.png",
     output_path="qrcode.png",
-    qr_color="teal",
+    qr_color="black",
     bg_color="white",
-    dot_scale=0.5,
-    corner_shape="circle",
-    module_shape="heart"
+    dot_scale=1.0,
 )
 generator.generate()
