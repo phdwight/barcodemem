@@ -1,7 +1,7 @@
 """Image saving implementations."""
 
-from PIL import Image
 from typing import Optional
+from PIL import Image
 from src.interfaces import ImageSaver
 
 
