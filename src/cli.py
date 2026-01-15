@@ -233,8 +233,9 @@ def main():
             print(f"Error: Logo file not found: {args.logo}", file=sys.stderr)
             return 1
 
-    # Validate that logo is provided if not using no-logo
-    if not args.no_logo and not args.logo and args.preset is None:
+    # Validate that logo is provided if not using no-logo and not using preset
+    # Presets can work with or without logos, so they don't require this check
+    if not args.preset and not args.no_logo and not args.logo:
         print("Error: Either provide --logo, use --no-logo, or use --preset", file=sys.stderr)
         return 1
 
